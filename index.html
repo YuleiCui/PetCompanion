@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宠物陪伴师 - 微信小程序原型</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            background-color: #f7f7f7;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        /* 主题颜色 */
+        :root {
+            --primary-color: #6babf5;
+            --secondary-color: #a8dba8;
+            --accent-color: #ffb6b9;
+            --text-color: #333333;
+            --light-text: #666666;
+            --background: #f7f7f7;
+            --card-bg: #ffffff;
+        }
+        
+        /* 界面容器 */
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        
+        /* 页面容器 */
+        .page {
+            width: 375px;
+            height: 667px;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #eaeaea;
+        }
+        
+        /* 页面标题 */
+        .page-title {
+            text-align: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 10;
+        }
+        
+        /* 页面说明 */
+        .page-description {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background-color: #5a9ae6;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* 输入框样式 */
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border 0.3s ease;
+        }
+        
+        .input-field:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* 头像样式 */
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        /* 徽章样式 */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        
+        /* 星级评分 */
+        .rating {
+            color: #f8ce0b;
+            font-size: 14px;
+        }
+        
+        /* 页面内容区域 */
+        .page-content {
+            padding: 0 15px;
+            height: calc(100% - 60px);
+            overflow-y: auto;
+        }
+        
+        /* 底部导航栏 */
+        .tab-bar {
+            display: flex;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background-color: white;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .tab-item.active {
+            color: var(--primary-color);
+        }
+        
+        .tab-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+        
+        /* 登录页面样式 */
+        .login-logo {
+            width: 120px;
+            height: 120px;
+            margin: 30px auto;
+            display: block;
+            border-radius: 20px;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-logo svg {
+            width: 70px;
+            height: 70px;
+            fill: white;
+        }
+        
+        .login-title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: var(--text-color);
+        }
+        
+        .login-form {
+            padding: 0 30px;
+        }
+        
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        .login-options a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .wechat-login {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .wechat-btn {
+            background-color: #2dc100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .wechat-btn svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            fill: white;
+        }
+        
+        /* 主页样式 */
+        .search-bar {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .search-bar input {
+            padding-left: 40px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 18px;
+        }
+        
+        .category-list {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin-bottom: 15px;
+            scrollbar-width: none;
+        }
+        
+        .category-list::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-item {
+            flex: 0 0 auto;
+            padding: 8px 15px;
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            margin-right: 10px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .category-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .companion-card {
+            display: flex;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .companion-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+        
+        .companion-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .companion-distance {
+            margin-left: auto;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .companion-tags {
+            margin: 8px 0;
+        }
+        
+        .companion-price {
+            color: #f56c6c;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+        
+        .section-title {
+            margin: 20px 0 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; margin-bottom: 30px; color: var(--primary-color);">宠物陪伴师 - 微信小程序原型</h1>
+    
+    <div class="app-container">
+        <!-- 登录页面 -->
+        <div class="page">
+            <div class="page-content">
+                <div class="login-logo">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12,2C6.48,2 2,6.48 2,12c0,5.52 4.48,10 10,10s10-4.48 10-10C22,6.48 17.52,2 12,2zM7.07,18.28c0.43,-0.9 3.05,-1.78 4.93,-1.78s4.51,0.88 4.93,1.78C15.57,19.36 13.86,20 12,20s-3.57,-0.64 -4.93,-1.72zM12,14.5c1.46,0 4.93,0.59 5.93,1.17c0.64,-1 1.07,-2.17 1.07,-3.5c0,-3.9 -3.1,-7 -7,-7s-7,3.1 -7,7c0,1.33 0.43,2.5 1.08,3.5C7.07,15.09 10.54,14.5 12,14.5zM12,11c-1.05,0 -1.95,-0.74 -1.95,-1.65c0,-0.91 0.9,-1.65 1.95,-1.65s1.95,0.74 1.95,1.65C13.95,10.26 13.05,11 12,11z"/>
+                    </svg>
+                </div>
+                <h2 class="login-title">欢迎来到宠物陪伴</h2>
+                <div class="login-form">
+                    <input type="text" class="input-field" placeholder="手机号">
+                    <input type="password" class="input-field" placeholder="密码">
+                    <button class="btn">登 录</button>
+                    <div class="login-options">
+                        <a href="#">忘记密码?</a>
+                        <a href="#">注册账号</a>
+                    </div>
+                    <div class="wechat-login">
+                        <p style="color: #999; margin-bottom: 15px;">———— 或使用以下方式登录 ————</p>
+                        <button class="btn wechat-btn">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M9.5,4C5.36,4 2,6.69 2,10C2,11.89 3.08,13.56 4.78,14.66L4,17L6.5,15.5C7.39,15.82 8.37,16 9.41,16C9.15,15.37 9,14.7 9,14C9,10.69 12.13,8 16,8C16.19,8 16.38,8 16.56,8.03C15.54,5.69 12.78,4 9.5,4M6.5,6.5A1,1 0 0,1 7.5,7.5A1,1 0 0,1 6.5,8.5A1,1 0 0,1 5.5,7.5A1,1 0 0,1 6.5,6.5M11.5,6.5A1,1 0 0,1 12.5,7.5A1,1 0 0,1 11.5,8.5A1,1 0 0,1 10.5,7.5A1,1 0 0,1 11.5,6.5M16,9C12.69,9 10,11.24 10,14C10,16.76 12.69,19 16,19C16.67,19 17.31,18.92 17.91,18.75L20,20L19.38,18.13C20.95,17.22 22,15.71 22,14C22,11.24 19.31,9 16,9M14,11.5A1,1 0 0,1 15,12.5A1,1 0 0,1 14,13.5A1,1 0 0,1 13,12.5A1,1 0 0,1 14,11.5M18,11.5A1,1 0 0,1 19,12.5A1,1 0 0,1 18,13.5A1,1 0 0,1 17,12.5A1,1 0 0,1 18,11.5Z"/>
+                            </svg>
+                            微信登录
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主页 - 附近宠物陪伴师列表 -->
+        <div class="page">
+            <div class="page-title">附近的宠物陪伴师</div>
+            <div class="page-content">
+                <div class="search-bar">
+                    <span class="search-icon">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="#999">
+                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                    </span>
+                    <input type="text" class="input-field" placeholder="搜索宠物陪伴师">
+                </div>
+                
+                <div class="category-list">
+                    <div class="category-item active">全部</div>
+                    <div class="category-item">遛狗</div>
+                    <div class="category-item">喂养</div>
+                    <div class="category-item">洗护</div>
+                    <div class="category-item">训练</div>
+                    <div class="category-item">看护</div>
+                    <div class="category-item">接送</div>
+                </div>
+                
+                <h3 class="section-title">推荐陪伴师</h3>
+                
+                <div class="companion-card">
+                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3e%3crect fill='%236babf5' width='60' height='60'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='20' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e李%3c/text%3e%3c/svg%3e" class="avatar">
+                    <div class="companion-info">
+                        <div class="companion-name">
+                            李明 <span class="companion-distance">500m</span>
+                        </div>
+                        <div class="rating">★★★★★ 5.0</div>
+                        <div class="companion-tags">
+                            <span class="badge">遛狗</span>
+                            <span class="badge">喂养</span>
+                        </div>
+                        <div class="companion-price">¥60/小时</div>
+                    </div>
+                </div>
+                
+                <div class="companion-card">
+                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3e%3crect fill='%23a8dba8' width='60' height='60'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='20' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e王%3c/text%3e%3c/svg%3e" class="avatar">
+                    <div class="companion-info">
+                        <div class="companion-name">
+                            王小花 <span class="companion-distance">1.2km</span>
+                        </div>
+                        <div class="rating">★★★★☆ 4.8</div>
+                        <div class="companion-tags">
+                            <span class="badge">洗护</span>
+                            <span class="badge">训练</span>
+                        </div>
+                        <div class="companion-price">¥80/小时</div>
+                    </div>
+                </div>
+                
+                <div class="companion-card">
+                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3e%3crect fill='%23ffb6b9' width='60' height='60'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='20' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e张%3c/text%3e%3c/svg%3e" class="avatar">
+                    <div class="companion-info">
+                        <div class="companion-name">
+                            张大山 <span class="companion-distance">800m</span>
+                        </div>
+                        <div class="rating">★★★★★ 4.9</div>
+                        <div class="companion-tags">
+                            <span class="badge">看护</span>
+                            <span class="badge">接送</span>
+                        </div>
+                        <div class="companion-price">¥70/小时</div>
+                    </div>
+                </div>
+                
+                <div class="companion-card">
+                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3e%3crect fill='%236babf5' width='60' height='60'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='20' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e赵%3c/text%3e%3c/svg%3e" class="avatar">
+                    <div class="companion-info">
+                        <div class="companion-name">
+                            赵雅琴 <span class="companion-distance">1.5km</span>
+                        </div>
+                        <div class="rating">★★★★☆ 4.7</div>
+                        <div class="companion-tags">
+                            <span class="badge">遛狗</span>
+                            <span class="badge">训练</span>
+                        </div>
+                        <div class="companion-price">¥65/小时</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部导航栏 -->
+            <div class="tab-bar">
+                <div class="tab-item active">
+                    <div class="tab-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                        </svg>
+                    </div>
+                    <div>首页</div>
+                </div>
+                <div class="tab-item">
+                    <div class="tab-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                        </svg>
+                    </div>
+                    <div>消息</div>
+                </div>
+                <div class="tab-item">
+                    <div class="tab-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <div>我的</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 宠物陪伴师详情页 -->
+        <div class="page">
+            <div class="page-title">陪伴师详情</div>
+            <div class="page-content">
+                <div style="position: relative;">
+                    <div style="height: 180px; background-color: var(--primary-color); border-radius: 15px; margin-bottom: 60px;">
+                        <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='375' height='180' viewBox='0 0 375 180'%3e%3crect fill='%236babf5' width='375' height='180'/%3e%3cpath fill='%23FFFFFF' fill-opacity='0.2' d='M20,70 C40,40 60,90 90,60 C120,30 140,80 160,50 C180,20 200,70 220,40 C240,10 260,60 280,30 C300,0 320,50 340,20 C360,-10 380,40 400,10 L400,200 L0,200 L0,100 C0,100 0,100 20,70 Z'/%3e%3c/svg%3e" style="width: 100%; height: 100%; object-fit: cover; border-radius: 15px;">
+                    </div>
+                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3e%3crect fill='%23a8dba8' width='100' height='100'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='36' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e王%3c/text%3e%3c/svg%3e" style="width: 80px; height: 80px; border-radius: 50%; position: absolute; bottom: 20px; left: 20px; border: 4px solid white; object-fit: cover;">
+                    <div style="position: absolute; bottom: 30px; left: 110px; color: white; font-weight: bold; font-size: 20px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">王小花</div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div class="rating" style="font-size: 16px;">★★★★☆ 4.8 (125条评价)</div>
+                    <div style="color: var(--accent-color); font-weight: 500;">¥80/小时</div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 10px;">个人简介</h3>
+                    <p style="color: var(--light-text); font-size: 14px; line-height: 1.6;">
+                        爱宠物、懂宠物，拥有3年宠物护理经验。擅长宠物洗护和基础训练，对各类猫狗都有丰富经验。爱心耐心，确保您的宠物得到最好的照顾。
+                    </p>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 10px;">提供服务</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 10px; text-align: center;">
+                            <svg viewBox="0 0 24 24" width="30" height="30" fill="var(--primary-color)" style="margin-bottom: 5px;">
+                                <path d="M4.5,9.5m10,0a1,1 0 1,0 2,0a1,1 0 1,0 -2,0M3,5A2,2 0 0,1 5,3H19A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5M5,5V19H19V5H5M7,13H17V11H7M7,17H12V15H7M7,9H10V7H7V9Z"/>
+                            </svg>
+                            <div style="font-weight: 500; margin-bottom: 3px;">宠物洗护</div>
+                            <div style="color: var(--light-text); font-size: 12px;">洗澡、美容、清洁</div>
+                        </div>
+                        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 10px; text-align: center;">
+                            <svg viewBox="0 0 24 24" width="30" height="30" fill="var(--primary-color)" style="margin-bottom: 5px;">
+                                <path d="M12,18.5C12,19.33 11.33,20 10.5,20H4V19H10.5C10.78,19 11,18.78 11,18.5V5.5C11,5.22 10.78,5 10.5,5H4V4H10.5C11.33,4 12,4.67 12,5.5V18.5M18,2C19.11,2 20,2.9 20,4V20C20,21.11 19.11,22 18,22H16C14.9,22 14,21.11 14,20V4C14,2.9 14.9,2 16,2H18M18,14H16V20H18V14M18,4H16V9H18V4Z"/>
+                            </svg>
+                            <div style="font-weight: 500; margin-bottom: 3px;">宠物训练</div>
+                            <div style="color: var(--light-text); font-size: 12px;">基础指令、行为矫正</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 10px;">服务区域</h3>
+                    <div style="height: 120px; background-color: #eee; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <svg viewBox="0 0 24 24" width="40" height="40" fill="#aaa">
+                            <path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"/>
+                        </svg>
+                        <div style="margin-left: 10px; color: #666;">
+                            <div style="font-weight: 500;">服务范围：3km</div>
+                            <div style="font-size: 12px;">朝阳区 望京街道</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 10px;">顾客评价</h3>
+                    <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
+                        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                            <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3e%3crect fill='%23ffb6b9' width='40' height='40'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='16' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e李%3c/text%3e%3c/svg%3e" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                            <div>
+                                <div style="font-weight: 500;">李先生</div>
+                                <div class="rating" style="font-size: 12px;">★★★★★ 5.0</div>
+                            </div>
+                            <div style="margin-left: auto; color: #999; font-size: 12px;">2天前</div>
+                        </div>
+                        <p style="font-size: 14px; color: var(--light-text);">王小花非常专业，我家的金毛很喜欢她。洗护做得很到位，推荐给有需要的朋友。</p>
+                    </div>
+                    <div>
+                        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                            <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3e%3crect fill='%236babf5' width='40' height='40'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='16' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e张%3c/text%3e%3c/svg%3e" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                            <div>
+                                <div style="font-weight: 500;">张女士</div>
+                                <div class="rating" style="font-size: 12px;">★★★★☆ 4.0</div>
+                            </div>
+                            <div style="margin-left: auto; color: #999; font-size: 12px;">1周前</div>
+                        </div>
+                        <p style="font-size: 14px; color: var(--light-text);">服务态度很好，帮我的猫咪做了训练，效果不错。就是价格稍微有点高。</p>
+                    </div>
+                </div>
+                
+                <div style="height: 80px;"></div>
+            </div>
+            
+            <!-- 底部固定按钮 -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 15px; background-color: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: flex; align-items: center;">
+                <div style="flex: 1; margin-right: 10px;">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="#999" style="margin: 0 auto; display: block;">
+                        <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
+                    </svg>
+                    <div style="text-align: center; font-size: 12px; color: #999;">收藏</div>
+                </div>
+                <div style="flex: 1; margin-right: 10px;">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="#999" style="margin: 0 auto; display: block;">
+                        <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M20,16H6L4,18V4H20"/>
+                    </svg>
+                    <div style="text-align: center; font-size: 12px; color: #999;">联系</div>
+                </div>
+                <button class="btn" style="flex: 3;">立即预约</button>
+            </div>
+        </div>
+
+        <!-- 服务预约页面 -->
+        <div class="page">
+            <div class="page-title">预约服务</div>
+            <div class="page-content">
+                <div class="card" style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3e%3crect fill='%23a8dba8' width='60' height='60'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='20' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e王%3c/text%3e%3c/svg%3e" class="avatar">
+                    <div style="margin-left: 15px;">
+                        <div style="font-weight: 600; font-size: 16px;">王小花</div>
+                        <div class="rating">★★★★☆ 4.8</div>
+                        <div style="color: var(--accent-color); font-size: 14px; font-weight: 500; margin-top: 2px;">¥80/小时</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">选择服务类型</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div style="background-color: var(--primary-color); color: white; padding: 12px; border-radius: 10px; text-align: center; font-weight: 500;">
+                            宠物洗护
+                        </div>
+                        <div style="background-color: #f0f0f0; color: var(--light-text); padding: 12px; border-radius: 10px; text-align: center; font-weight: 500;">
+                            宠物训练
+                        </div>
+                    </div>
+                    <div style="color: var(--light-text); font-size: 14px;">
+                        <div style="margin-bottom: 8px;"><b>包含服务：</b>洗澡、美容、清洁</div>
+                        <div><b>服务时长：</b>约60分钟</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">选择日期和时间</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <p style="font-size: 14px; color: var(--light-text); margin-bottom: 10px;">日期</p>
+                        <div style="display: flex; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;">
+                            <div style="flex: 0 0 auto; width: 60px; height: 70px; background-color: var(--primary-color); color: white; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 10px;">
+                                <div style="font-size: 14px;">今天</div>
+                                <div style="font-size: 18px; font-weight: 600; margin: 2px 0;">05/15</div>
+                                <div style="font-size: 12px;">周一</div>
+                            </div>
+                            <div style="flex: 0 0 auto; width: 60px; height: 70px; background-color: #f0f0f0; color: var(--text-color); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 10px;">
+                                <div style="font-size: 14px;">明天</div>
+                                <div style="font-size: 18px; font-weight: 600; margin: 2px 0;">05/16</div>
+                                <div style="font-size: 12px;">周二</div>
+                            </div>
+                            <div style="flex: 0 0 auto; width: 60px; height: 70px; background-color: #f0f0f0; color: var(--text-color); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 10px;">
+                                <div style="font-size: 14px;"></div>
+                                <div style="font-size: 18px; font-weight: 600; margin: 2px 0;">05/17</div>
+                                <div style="font-size: 12px;">周三</div>
+                            </div>
+                            <div style="flex: 0 0 auto; width: 60px; height: 70px; background-color: #f0f0f0; color: var(--text-color); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 10px;">
+                                <div style="font-size: 14px;"></div>
+                                <div style="font-size: 18px; font-weight: 600; margin: 2px 0;">05/18</div>
+                                <div style="font-size: 12px;">周四</div>
+                            </div>
+                            <div style="flex: 0 0 auto; width: 60px; height: 70px; background-color: #f0f0f0; color: var(--text-color); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-right: 10px;">
+                                <div style="font-size: 14px;"></div>
+                                <div style="font-size: 18px; font-weight: 600; margin: 2px 0;">05/19</div>
+                                <div style="font-size: 12px;">周五</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <p style="font-size: 14px; color: var(--light-text); margin-bottom: 10px;">时间段</p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                            <div style="background-color: var(--primary-color); color: white; padding: 10px 0; border-radius: 10px; text-align: center; font-size: 14px;">
+                                9:00-10:00
+                            </div>
+                            <div style="background-color: #f0f0f0; color: var(--text-color); padding: 10px 0; border-radius: 10px; text-align: center; font-size: 14px;">
+                                10:30-11:30
+                            </div>
+                            <div style="background-color: #f0f0f0; color: var(--text-color); padding: 10px 0; border-radius: 10px; text-align: center; font-size: 14px;">
+                                13:00-14:00
+                            </div>
+                            <div style="background-color: #f0f0f0; color: var(--text-color); padding: 10px 0; border-radius: 10px; text-align: center; font-size: 14px;">
+                                14:30-15:30
+                            </div>
+                            <div style="background-color: #f0f0f0; color: var(--text-color); padding: 10px 0; border-radius: 10px; text-align: center; font-size: 14px;">
+                                16:00-17:00
+                            </div>
+                            <div style="background-color: #f0f0f0; color: var(--text-color); padding: 10px 0; border-radius: 10px; text-align: center; font-size: 14px;">
+                                17:30-18:30
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">您的宠物信息</h3>
+                    <select class="input-field" style="margin-bottom: 15px;">
+                        <option>选择宠物</option>
+                        <option>小白 (金毛 | 2岁)</option>
+                        <option>添加新宠物</option>
+                    </select>
+                    <textarea class="input-field" placeholder="备注信息（如特殊需求或注意事项）" style="height: 80px; resize: none;"></textarea>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">服务地址</h3>
+                    <select class="input-field">
+                        <option>家庭地址 (朝阳区建国路88号)</option>
+                        <option>办公室 (海淀区中关村大街1号)</option>
+                        <option>添加新地址</option>
+                    </select>
+                </div>
+                
+                <div class="card" style="margin-bottom: 80px;">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">费用详情</h3>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="color: var(--light-text);">基础服务费(1小时)</div>
+                        <div>¥80.00</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="color: var(--light-text);">交通费</div>
+                        <div>¥10.00</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="color: var(--light-text);">平台服务费</div>
+                        <div>¥5.00</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px dashed #eee; font-weight: 600;">
+                        <div>总计</div>
+                        <div style="color: var(--accent-color);">¥95.00</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部固定按钮 -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 15px; background-color: white; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div style="font-weight: 600;">总计</div>
+                    <div style="color: var(--accent-color); font-size: 20px; font-weight: 600;">¥95.00</div>
+                </div>
+                <button class="btn">确认预约</button>
+            </div>
+        </div>
+
+        <!-- 用户个人中心页面 -->
+        <div class="page">
+            <div class="page-title">个人中心</div>
+            <div class="page-content">
+                <div class="card" style="display: flex; align-items: center; margin-bottom: 20px;">
+                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3e%3crect fill='%23a8dba8' width='60' height='60'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='20' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e王%3c/text%3e%3c/svg%3e" class="avatar">
+                    <div style="margin-left: 15px;">
+                        <div style="font-weight: 600; font-size: 16px;">王小花</div>
+                        <div style="color: var(--light-text); font-size: 14px;">188****1234</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">我的订单</h3>
+                    <div style="display: flex; justify-content: space-around;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">2</div>
+                            <div style="color: var(--light-text); font-size: 14px;">待付款</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">1</div>
+                            <div style="color: var(--light-text); font-size: 14px;">待服务</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">3</div>
+                            <div style="color: var(--light-text); font-size: 14px;">已完成</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">0</div>
+                            <div style="color: var(--light-text); font-size: 14px;">已取消</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">我的宠物</h3>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3e%3crect fill='%23a8dba8' width='40' height='40'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='16' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e小%3c/text%3e%3c/svg%3e" class="avatar" style="width: 40px; height: 40px;">
+                        <div style="margin-left: 10px;">
+                            <div style="font-weight: 600; font-size: 14px;">小白</div>
+                            <div style="color: var(--light-text); font-size: 12px;">金毛 | 2岁</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3e%3crect fill='%23a8dba8' width='40' height='40'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='16' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e小%3c/text%3e%3c/svg%3e" class="avatar" style="width: 40px; height: 40px;">
+                        <div style="margin-left: 10px;">
+                            <div style="font-weight: 600; font-size: 14px;">小黑</div>
+                            <div style="color: var(--light-text); font-size: 12px;">哈士奇 | 1岁</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">我的地址</h3>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)" style="margin-right: 10px;">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6.5A1.5,1.5 0 0,0 10.5,8A1.5,1.5 0 0,0 12,9.5A1.5,1.5 0 0,0 13.5,8A1.5,1.5 0 0,0 12,6.5M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10Z"/>
+                        </svg>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 14px;">家庭地址</div>
+                            <div style="color: var(--light-text); font-size: 12px;">朝阳区建国路88号</div>
+                        </div>
+                        <div style="color: var(--light-text); font-size: 12px;">默认</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)" style="margin-right: 10px;">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6.5A1.5,1.5 0 0,0 10.5,8A1.5,1.5 0 0,0 12,9.5A1.5,1.5 0 0,0 13.5,8A1.5,1.5 0 0,0 12,6.5M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10Z"/>
+                        </svg>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 14px;">办公室</div>
+                            <div style="color: var(--light-text); font-size: 12px;">海淀区中关村大街1号</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">我的收藏</h3>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3e%3crect fill='%23a8dba8' width='60' height='60'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='20' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e王%3c/text%3e%3c/svg%3e" class="avatar">
+                        <div style="margin-left: 15px; flex: 1;">
+                            <div style="font-weight: 600; font-size: 14px;">王小花</div>
+                            <div class="rating">★★★★☆ 4.8</div>
+                            <div style="color: var(--light-text); font-size: 12px;">¥80/小时</div>
+                        </div>
+                        <div style="color: var(--light-text); font-size: 12px;">已收藏</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3e%3crect fill='%23a8dba8' width='60' height='60'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='20' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e李%3c/text%3e%3c/svg%3e" class="avatar">
+                        <div style="margin-left: 15px; flex: 1;">
+                            <div style="font-weight: 600; font-size: 14px;">李小美</div>
+                            <div class="rating">★★★★★ 5.0</div>
+                            <div style="color: var(--light-text); font-size: 12px;">¥90/小时</div>
+                        </div>
+                        <div style="color: var(--light-text); font-size: 12px;">已收藏</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">设置</h3>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)" style="margin-right: 10px;">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6.5A1.5,1.5 0 0,0 10.5,8A1.5,1.5 0 0,0 12,9.5A1.5,1.5 0 0,0 13.5,8A1.5,1.5 0 0,0 12,6.5M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10Z"/>
+                        </svg>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 14px;">个人信息</div>
+                        </div>
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--light-text)" style="margin-left: 10px;">
+                            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                        </svg>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)" style="margin-right: 10px;">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6.5A1.5,1.5 0 0,0 10.5,8A1.5,1.5 0 0,0 12,9.5A1.5,1.5 0 0,0 13.5,8A1.5,1.5 0 0,0 12,6.5M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10Z"/>
+                        </svg>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 14px;">我的地址</div>
+                        </div>
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--light-text)" style="margin-left: 10px;">
+                            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                        </svg>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)" style="margin-right: 10px;">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6.5A1.5,1.5 0 0,0 10.5,8A1.5,1.5 0 0,0 12,9.5A1.5,1.5 0 0,0 13.5,8A1.5,1.5 0 0,0 12,6.5M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10Z"/>
+                        </svg>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 14px;">我的宠物</div>
+                        </div>
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--light-text)" style="margin-left: 10px;">
+                            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                        </svg>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)" style="margin-right: 10px;">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6.5A1.5,1.5 0 0,0 10.5,8A1.5,1.5 0 0,0 12,9.5A1.5,1.5 0 0,0 13.5,8A1.5,1.5 0 0,0 12,6.5M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10Z"/>
+                        </svg>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 14px;">我的收藏</div>
+                        </div>
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--light-text)" style="margin-left: 10px;">
+                            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                        </svg>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)" style="margin-right: 10px;">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6.5A1.5,1.5 0 0,0 10.5,8A1.5,1.5 0 0,0 12,9.5A1.5,1.5 0 0,0 13.5,8A1.5,1.5 0 0,0 12,6.5M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10Z"/>
+                        </svg>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 14px;">关于我们</div>
+                        </div>
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--light-text)" style="margin-left: 10px;">
+                            <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 支付确认页面 -->
+        <div class="page">
+            <div class="page-title">支付确认</div>
+            <div class="page-content">
+                <div style="text-align: center; padding: 20px 0;">
+                    <div style="width: 70px; height: 70px; background-color: var(--secondary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                        <svg viewBox="0 0 24 24" width="40" height="40" fill="white">
+                            <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z"/>
+                        </svg>
+                    </div>
+                    <h2 style="font-size: 20px; margin-bottom: 5px;">支付成功</h2>
+                    <p style="color: var(--light-text); font-size: 14px;">您的订单已成功支付！</p>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">订单信息</h3>
+                    <div style="display: flex; margin-bottom: 20px;">
+                        <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3e%3crect fill='%23a8dba8' width='60' height='60'/%3e%3ctext fill='%23FFFFFF' font-family='sans-serif' font-size='20' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' alignment-baseline='middle'%3e王%3c/text%3e%3c/svg%3e" class="avatar">
+                        <div style="margin-left: 15px; flex: 1;">
+                            <div style="font-weight: 600; font-size: 16px; margin-bottom: 5px;">宠物洗护服务</div>
+                            <div style="color: var(--light-text); font-size: 14px;">服务师：王小花</div>
+                            <div style="color: var(--light-text); font-size: 14px;">预约时间：5月15日 09:00-10:00</div>
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px dashed #eee; padding-top: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <div style="color: var(--light-text); font-size: 14px;">订单编号</div>
+                            <div style="font-size: 14px;">PET202305150001</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <div style="color: var(--light-text); font-size: 14px;">支付方式</div>
+                            <div style="font-size: 14px;">微信支付</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <div style="color: var(--light-text); font-size: 14px;">下单时间</div>
+                            <div style="font-size: 14px;">2023-05-14 15:30:25</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">订单金额</h3>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="color: var(--light-text);">基础服务费(1小时)</div>
+                        <div>¥80.00</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="color: var(--light-text);">交通费</div>
+                        <div>¥10.00</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="color: var(--light-text);">平台服务费</div>
+                        <div>¥5.00</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px dashed #eee; font-weight: 600;">
+                        <div>实付金额</div>
+                        <div style="color: var(--accent-color); font-size: 18px;">¥95.00</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">温馨提示</h3>
+                    <p style="color: var(--light-text); font-size: 14px; line-height: 1.6;">
+                        1. 服务开始前30分钟内取消订单，将收取50%的取消费用<br>
+                        2. 请提前为宠物做好准备，确保宠物状态良好<br>
+                        3. 如有特殊需求，请提前与服务师沟通<br>
+                        4. 服务完成后，请对服务进行评价
+                    </p>
+                </div>
+                
+                <div style="margin: 30px 0; text-align: center;">
+                    <button class="btn" style="background-color: white; color: var(--primary-color); border: 1px solid var(--primary-color); max-width: 200px; margin: 0 auto;">查看订单详情</button>
+                </div>
+                
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <div style="display: inline-block; margin: 0 15px;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)">
+                            <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M8,14H6V12H8V14M8,11H6V9H8V11M8,8H6V6H8V8M15,14H10V12H15V14M18,11H10V9H18V11M18,8H10V6H18V8Z"/>
+                        </svg>
+                        <div style="font-size: 12px; color: var(--light-text); margin-top: 5px;">联系客服</div>
+                    </div>
+                    <div style="display: inline-block; margin: 0 15px;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z"/>
+                        </svg>
+                        <div style="font-size: 12px; color: var(--light-text); margin-top: 5px;">完成</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 可能会用到的简单交互脚本
+    </script>
+</body>
+</html>
